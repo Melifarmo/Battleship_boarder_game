@@ -1,0 +1,147 @@
+<header>
+    {% if user.is_authenticated %}
+        <div class="header_static">
+        <a href="{% url 'money' %}" class="default">
+        <table>
+            <tr class="static_field">
+                <td style="text-align: right;">Баланс  </td>
+                <td style="text-align: center;">{{ user_balance }}</td>
+            </tr>
+            <tr class="static_field">
+                <td style="text-align: right;">Доход в месяц  </td>
+                <td width='75' style="text-align: center;">{{ user_income }}</td>
+            </tr>
+        </table>
+        </a>
+    </div>
+        <div class="header_static" id='task_generic'>
+        <ul class="static_list center">
+            <li class="static_field">
+                Дела на сегодня
+            </li>
+            <li class="static_field center">
+            </li>
+        </ul>
+    </div>
+    {% endif %}
+    <div class="task_div" style="display: none;">
+        <ul class="task_list">
+            {% if today or sorted_repeatable_tasks or overdue %}
+                {% for task in today %}
+                <form action="{% url 'change_status' %}" method="POST">
+                    {% csrf_token %}
+                <li>
+                    <p style="margin: 0px;">
+                        <input type="checkbox" name='done' onChange="this.form.submit()">{{ task.title }}
+                    </p>
+                </li>
+                <input style="display: none;" name='id' value="{{ task.id }}">
+                <input style="display: none;" name='date' value="{{ task.date }}">
+                <input style="display: none;" name='title' value="{{ task.title }}">
+                </form>
+                {% endfor %}
+
+                {% for task in sorted_repeatable_tasks %}
+                <form action="{% url 'change_status' %}" method="POST">
+                    {% csrf_token %}
+                <li>
+                    <p style="margin: 0px;">
+                        <input type="checkbox" name='done' onChange="this.form.submit()">{{ task.title }}
+                    </p>
+                </li>
+                <input style="display: none;" name='id' value="{{ task.id }}">
+                <input style="display: none;" name='date' value="{{ task.date }}">
+                <input style="display: none;" name='title' value="{{ task.title }}">
+                </form>
+                {% endfor %}
+
+                {% for task in overdue %}
+                <form action="{% url 'change_status' %}" method="POST">
+                    {% csrf_token %}
+                <li class="overdue_li">
+                    <p style="margin: 0px;" class="overdue">
+                        <input type="checkbox" name='done' onChange="this.form.submit()">{{ task.title }}
+                    </p>
+                </li>
+                <input style="display: none;" name='id' value="{{ task.id }}">
+                <input style="display: none;" name='date' value="{{ task.date }}">
+                <input style="display: none;" name='title' value="{{ task.title }}">
+                </form>
+                {% endfor %}
+            {% else %} 
+            <li>
+                <p style="margin: 0px;" class="center">
+                    <a href="{% url 'planner' %}" class="default">
+                    Актуальных задач нет
+                    <br>
+                    Назначить?
+                    </a>
+                </p>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="authForm">
+        {% if user.is_authenticated %}
+        <ul class="auth_ul default center">
+        <li class="auth_li">
+            <a class='default' href="{% url 'cabinet' %}"><b>Личный кабинет</b></a>
+        </li>
+        <li class="auth_li">
+            <a class='default' href="{% url 'logout' %}?next={{ request.path }}"><b>Выйти из профиля</b></a>
+        </li>
+       </ul>
+        {% else %}
+        
+        <form method="POST" action="{% url 'login' %}">
+            {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+            {% endif %}
+            <div class="input_div">
+            {% csrf_token %}
+            {{ login_form.as_p }}
+            </div>
+            <div class="btn_div">
+                <button class='btn_login'>Войти</button>
+                <a href="{% url 'registration' %}">
+                    <button type="button" class='btn_login'>Регистрация</button>
+                </a>
+                <p class="lost-password"><a href="{% url 'password_reset' %}?next={{ request.path }}">Забыли пароль?</a></p>
+            </div>
+        </form>  
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <form action="" method="post" id="email_form"> {% csrf_token %}
+        <div class="header_static send_email" onclick="this.form.submit()">
+            <a href="#" onclick="document.getElementById('email_form').submit()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" onclick="this.form.submit()"
+                     fill="currentColor" class="bi" viewBox="0 0 16 16">
+                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+                </svg>
+            </a>
+        </div>
+    </form>
+
+    {% endif %}
+    <script>
+        task_generic
+
+        function switchGenericTask () {
+        let trigger = document.querySelector('#task_generic');
+        let window = document.querySelector('.task_div');
+        trigger.addEventListener('click', () => {
+            if (window.style.display == 'none') {
+                trigger.style.background = 'rgb(100, 100, 100)';
+                window.style.display = 'table-row';
+            }
+            else {
+                trigger.style.background = 'rgb(139, 139, 139)';
+                window.style.display = 'none';
+            }    
+        })
+    }
+    switchGenericTask()
+    </script>
+</header>

@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Управление финансами{% endblock %}
+
+{% block content %}
+<div class="selector-of-money" xmlns="http://www.w3.org/1999/html">
+    <div class="selector">
+        <div class="money-switcher" >
+            <p id='left'>Доходы</p>
+        </div>
+        <div class="money-switcher">
+            <p id='centre'>Сводка</p>
+        </div>
+        <div class="money-switcher">
+            <p id='right'>Расходы</p>
+        </div>
+    </div>
+</div>
+<div class="total">    
+    <div id='bl1' class="main_total">
+    <div class="left_main">
+        <div class="content">
+            <div class="content-block">
+                <p class="content_title">Дебетовые счета</p>
+                <table cellpadding='5'>
+                    <tr>
+                        <th>Название карты</th>
+                        <th>Баланс</th>
+                        <th>Удалить?</th>
+                        <th></th>
+                    </tr>
+                    {% if debit_all %}
+                        {% for card in debit_all %}
+                        <tr>
+                            <form method="POST" action='{% url "delete_or_update" %}'>
+                                {% csrf_token %}
+                                <td>
+                                    <input class='card_place_inp' name='title' value="{{ card.title }}"></input>
+                                </td>
+                                <td width='110' class='td-second'>
+                                    <input class='card_place_inp' type="number" style='text-align: center;' name='balance' value='{{ card.balance }}'></input>
+                                </td>
+                                <td width='110'>
+                                    <p style="text-align: center; margin: 0px;">
+                                        <input type="checkbox" name='delete'>
+                                    </p>
+                                </td>
+                                <input style="display: none;" name='id' value="{{ card.id }}">
+                                <input style="display: none;" name='form' value="Debit">
+                                <td width='110'>
+                                    <input class='btn-to-change'type="submit" value="Изменить"/>
+                                </td>
+                            </form>
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td class="empty_values" colspan="3">Нету активных карт</td>
+                    </tr>
+                    {% endif %}
+                    <tr class='total_in_table'>
+                        <td colspan="2"></td>
+                        <td >Итого:</td>
+                        <td><b>{{ debit_all | count_balance }}</b></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="content-block">
+                <p class="content_title">Источники дохода</p>
+                <table cellpadding='5'>
+                    <tr>
+                        <th>Источник</th>
+                        <th>Тип</th>
+                        <th>Сумма</th>
+                        <th>
+                            Удалить?
+                        </th>
+                    </tr>
+                    {% if incomes %}
+                    {% for income in incomes %}
+                    <!--{% sort_by_id income_options income.id 'Income' %}-->
+                    <tr>
+                        <form method="POST" action='{% url "delete_or_update" %}'>
+                            {% csrf_token %}
+                            <td >
+                                <input class='card_place_inp' name='title' value="{{ income.title }}">
+                            </td>
+                            <td width='115' class="center">
+                                <select name="group_id" id="trg">
+                                {% for id, option in income_options %}
+                                <option value="{{ id }}">{{ option }}</option>
+                                {% endfor %}
+                                </select>
+                            </td>
+                            <td class='td-second' width='110'>
+                                <input class='card_place_inp' type="number" style='text-align: center;' name='size' value='{{ income.size }}'></input>
+                            </td>
+                            <td width='110'>
+                                <p style="text-align: center; margin: 0px;">
+                                    <input type="checkbox" name='delete'>
+                                </p>
+                            </td>
+                            <input style="display: none; " name='id' value="{{ income.id }}">
+                            <input style="display: none; " name='form' value="Income">
+                            <td width='110'>
+                                <input class='btn-to-change'type="submit" value="Изменить"/>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="empty_values" colspan="4">Нету активных источников дохода</td>
+                        </tr>
+                    {% endif %}
+                    <tr class='total_in_table'>
+                        <td colspan="3"></td>
+                        <td >Итого:</td>
+                        <td><b>{{ incomes | count_balance }}</b></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="right_main">
+        <div class="content right_cont">
+            <div class="content-block">
+                <p class="content_title">Добавить новую карту</p>
+                <form class="add_card" action="{% url 'add_card' %}" method="POST">
+                    <table>
+                        {% csrf_token %}
+                        <tr>
+                            <td>
+                                <label for="id_title">Название карты</label>
+                                {{ debit_add.title }}
+                            </td>
+                            <td>
+                                <label for="id_size">Баланс</label>
+                                {{ debit_add.balance }}
+                            </td>
+                        </tr>
+                    </table>
+                    <input style="display: none;" type="text" name='form' value="Debit">
+                    <p class="p-for-btn-centre">
+                        <button class="btn_centre" type="submit">Добавить</button>
+                    </p>
+                </form>
+            </div>
+            <div class="content-block">
+                <p class="content_title">Добавить источник дохода</p>
+                <form class="add_card" action="{% url 'add_transaction' %}" method="POST">
+                    {% csrf_token %}
+                    <table>
+                            {{ income_add.as_table }}
+                        <tr>
+                            <th>
+                                <label for="group_id">Группа:</label>
+                            </th>
+                            <td>
+                                <select name="group_id" id="trg">
+                                    {% if income_options %}
+                                        {% for id, option in income_options %}
+                                        <option value="{{ id }}">{{ option }}</option>
+                                        {% endfor %}
+                                    {% else %}
+                                        <option value="">Общий</option>
+                                    {% endif %}
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <input style="display: none;" type="text" name='group_form' value="Transaction_group">
+                    <input style="display: none;" type="text" name='form' value="Income">
+                    <p class="p-for-btn-centre">
+                        <button class="btn_centre" type="submit">Добавить</button>
+                    </p>
+                </form>
+            </div>
+            <div class="content-block">
+                <p class="content_title">Добавить группу / Удалить группу</p>
+                <form action="{% url 'add_money_group' %}" method="POST">
+                    <table>
+                        {% csrf_token %}
+                        {{ transaction_income.as_table }}
+                        <tr>
+                            <td>
+                                <p class="p-for-btn-centre">
+                                    <lable><b>Удалить группу с данным именем?</b></lable>
+                                </p>
+                            </td>
+                            <td>
+                                <input type="checkbox" id='delete_transaction_income' name='delete'>
+                            </td>
+                        </tr>
+                    </table>
+                    <input style="display: none;" type="text" name='form' value="Income_group">
+                    <p class="p-for-btn-centre">
+                        <button class="btn_centre" id='btn_for_tr_inc' type="submit">Добавить</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div id ='bl2' class="main_total">
+        <div class="total_money">
+            <div class="content" id='total_money_id'>
+                <div class="content-block" >
+                    <div class="total_money_div">
+                        <div class="table_in_total">
+                            <div class="table_raw">
+                                <p class="left_cell">Положительный баланс</p>
+                                <p class="right_cell">{{ debit_all | count_balance }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Положительный доход за месяц</p>
+                                <p class="right_cell">{{ incomes | count_balance }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Количество источников дохода</p>
+                                <p class="right_cell">{{ incomes | length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="total_money_div">
+                        <div class="table_in_total">
+                            <div class="table_raw">
+                                <p class="left_cell">Сводных баланс</p>
+                                <p class="right_cell">{{ user_balance }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Разница поступлений</p>
+                                <p class="right_cell">{{ user_income }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Количество месяцев до нуля</p>
+                                <p class="right_cell">{% widthratio user_balance user_income 1 %}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="total_money_div">
+                        <div class="table_in_total">
+                            <div class="table_raw">
+                                <p class="left_cell">Общая задолженность</p>
+                                <p class="right_cell">{{ credit_all | count_balance }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Расходы за месяц</p>
+                                <p class="right_cell">{{ expenses | count_balance }}</p>
+                            </div>
+                            <div class="table_raw">
+                                <p class="left_cell">Количество расходов</p>
+                                <p class="right_cell">{{ expenses | length }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="left_main">
+            <div class="content">
+                <div class="content-block">
+                    Статистика доходов
+                </div>
+            </div>
+        </div>
+        <div class="right_main">
+            <div class="content">
+                <div class="content-block">
+                    Статистика расходов
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id ='bl3' class="main_total">
+        <div class="left_main">
+            <div class="content">
+                <div class="content-block">
+                    <p class="content_title">Задолженности</p>
+                    <table cellpadding='5'>
+                        <tr>
+                            <th>
+                                Название задолженности
+                            </th>
+                            <th>Задолженность</th>
+                            <th>Удалить?</th>
+                            <th></th>
+                        </tr>
+                        {% if credit_all %}
+                            {% for card in credit_all %}
+                            <tr>
+                                <form method="POST" action='{% url "delete_or_update" %}'>
+                                    {% csrf_token %}
+                                    <td>
+                                        <input class='card_place_inp' name='title' value="{{ card.title }}"></input>
+                                    </td>
+                                    <td width='110' class='td-second'>
+                                        <input class='card_place_inp' type="number" style='text-align: center;' name='balance' value='{{ card.balance }}'></input>
+                                    </td>
+                                    <td width='110'>
+                                        <p style="text-align: center; margin: 0px;">
+                                            <input type="checkbox" name='delete'>
+                                        </p>
+                                    </td>
+                                    <input style="display: none;" name='id' value="{{ card.id }}">
+                                    <input style="display: none;" name='form' value="Credit">
+                                    <td width='110'>
+                                        <input class='btn-to-change'type="submit" value="Изменить"/>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="empty_values" colspan="3">Нету активных задолженностей</td>
+                            </tr>
+                        {% endif %}
+                        <tr class='total_in_table'>
+                            <td colspan="2"></td>
+                            <td >Итого:</td>
+                            <td><b>{{ credit_all | count_balance }}</b></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="content-block">
+                    <p class="content_title">Расходы</p>
+                    <table cellpadding='5'>
+                        <tr>
+                            <th>Источник</th>
+                            <th>Тип</th>
+                            <th>Сумма</th>
+                            <th>
+                                Удалить?
+                            </th>
+                        </tr>
+                        {% if expenses %}
+                            {% for expense in expenses %}
+                            <!-- {% sort_by_id expense_options expense.id 'Expense' %} -->
+                            <tr>
+                                <form method="POST" action='{% url "delete_or_update" %}'>
+                                    {% csrf_token %}
+                                    <td >
+                                        <input class='card_place_inp' name='title' value="{{ expense.title }}"></input>
+                                    </td>
+                                    <td width='115' class="center">
+                                        <select name="group_id" id="trg">
+                                            {% for id, option in expense_options %}
+                                            <option value="{{ id }}">{{ option }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td class='td-second' width='110'>
+                                        <input class='card_place_inp' type="number" style='text-align: center;' name='size' value='{{ expense.size }}'></input>
+                                    </td>
+                                    <td width='110'>
+                                        <p style="text-align: center; margin: 0px;">
+                                            <input type="checkbox" name='delete'>
+                                        </p>
+                                    </td>
+                                    <input style="display: none; " name='id' value="{{ expense.id }}">
+                                    <input style="display: none; " name='form' value="Expense">
+                                    <td width='110'>
+                                        <input class='btn-to-change'type="submit" value="Изменить"/>
+                                    </td>
+                                </form>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td class="empty_values" colspan="4">Нету активных расходов</td>
+                            </tr>
+                        {% endif %}
+                        <tr class='total_in_table'>
+                            <td colspan="3"></td>
+                            <td >Итого:</td>
+                            <td><b>{{ expenses | count_balance }}</b></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="right_main">
+            <div class="content right_cont">
+                <div class="content-block">
+                    <p class="content_title">Добавить задолженность</p>
+                    <form class="add_card" action="{% url 'add_card' %}" method="POST">
+                        <table>
+                            {% csrf_token %}
+                            <tr>
+                                <td>
+                                    <label for="id_title">Название</label>
+                                    {{ credit_add.title }}
+                                </td>
+                                <td>
+                                    <label for="id_balance">Баланс</label>
+                                    {{ credit_add.balance }}
+                                </td>
+                            </tr>
+                        </table>
+                        <input style="display: none;" type="text" name='form' value="Credit">
+                        <p class="p-for-btn-centre">
+                            <button class="btn_centre" type="submit">Добавить</button>
+                        </p>
+                    </form>
+                </div>
+                <div class="content-block">
+                    <p class="content_title">Добавить расходы</p>
+                    <form class="add_card" action="{% url 'add_transaction' %}" method="POST">
+                        {% csrf_token %}
+                        <table>
+                                {{ expense_add.as_table }}
+                            <tr>
+                                <th>
+                                    <label for="group_id">Группа:</label>
+                                </th>
+                                <td>
+                                    <select name="group_id" id="trg">
+                                        {% if expense_options %}
+                                            {% for id, option in expense_options %}
+                                            <option value="{{ id }}">{{ option }}</option>
+                                            {% endfor %}
+                                        {% else %}
+                                           <option value="">Общие</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <input style="display: none;" type="text" name='form' value="Expense">
+                        <input style="display: none;" type="text" name='group_form' value="Expense_group">
+                        <p class="p-for-btn-centre">
+                            <button class="btn_centre" type="submit">Добавить</button>
+                        </p>
+                    </form>
+                </div>
+                <div class="content-block">
+                    <p class="content_title">Добавить группу</p>
+                    <form action="{% url 'add_money_group' %}" method="POST">
+                        <table>
+                            {% csrf_token %}
+                            {{ Expense_group.as_table }}
+                            <tr>
+                                <td>
+                                    <p class="p-for-btn-centre">
+                                        <lable><b>Удалить группу с данным именем?</b></lable>
+                                    </p>
+                                </td>
+                                <td>
+                                    <input type="checkbox" id='delete_transaction' name="delete">
+                                </td>
+                            </tr>
+                        </table>
+                        <input style="display: none;" type="text" name='form' value="Expense_group">
+                        <p class="p-for-btn-centre">
+                            <button class="btn_centre" id='transaction_btn' type="submit">Добавить</button>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        function selectMoneyMain() {
+            let query = [];
+            query.push(leftSelect = document.querySelector('#left'));
+            query.push(leftSelect = document.querySelector('#centre'));
+            query.push(leftSelect = document.querySelector('#right'));
+
+            let queryToOpen = [];
+            queryToOpen.push(document.querySelector('#bl1'));
+            queryToOpen.push(document.querySelector('#bl2'));
+            queryToOpen.push(document.querySelector('#bl3'));
+
+            query[0].addEventListener('click', () => {
+                for (let i = 0; i < queryToOpen.length; i ++) {
+                    queryToOpen[i].style.display = 'none';
+                }
+                queryToOpen[0].style.display = 'block';
+            });
+            query[1].addEventListener('click', () => {
+                for (let i = 0; i < queryToOpen.length; i ++) {
+                    queryToOpen[i].style.display = 'none';
+                };
+                queryToOpen[1].style.display = 'block';
+            });
+            query[2].addEventListener('click', () => {
+                for (let i = 0; i < queryToOpen.length; i ++) {
+                    queryToOpen[i].style.display = 'none';
+                }
+                queryToOpen[2].style.display = 'block';
+            });
+        };
+        function selectTransactionButton() {
+            let box = document.querySelector('#delete_transaction_income');
+            console.log('lol')
+            box.addEventListener('click', () => {
+                btn = document.querySelector('#btn_for_tr_inc')
+                if (btn.innerHTML == 'Добавить') {
+                btn.innerHTML = 'Удалить';
+                }
+                else {
+                    btn.innerHTML = 'Добавить';
+                };
+            })
+        }
+        selectMoneyMain();
+        selectTransactionButton();
+
+</script>
+{% endblock %}

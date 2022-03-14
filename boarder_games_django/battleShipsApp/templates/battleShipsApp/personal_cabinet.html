@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="content-block login-div">
+        <h2 class="center">Личный кабинет</h2>
+
+        {% if not user.is_authenticated %}
+        <p>Please login to see this page.</p>
+        {% endif %}
+        <form method="post" action="">
+            {% csrf_token %}
+            <table>
+                {% for field in profile_form %}
+                <tr>
+                    <td>{{ field.label_tag }}</td>
+                    <td>{{ field }}</td>
+                </tr>
+                {% if registration.errors or field.help_text %}
+                    <tr>
+                        <td colspan="2" class="center">{{ field.help_text }}</td>
+                    </tr>
+                {% endif %}
+                {% endfor %}
+            </table>
+            <button class='btn_login'>Изменить данные</button>
+        </form>
+        <form method="get" action="{% url 'password_change' %}">
+            <button class="btn_login" >Сменить пароль</button>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

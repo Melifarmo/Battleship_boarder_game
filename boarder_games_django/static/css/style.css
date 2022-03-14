@@ -1,0 +1,484 @@
+body {
+    font-size: 14px;
+    padding: 0px;
+    margin: 0px;
+    height: 1500px;
+    font-family: 'Robot', sans-serif;
+    overflow-y: scroll;
+    overflow-x: hidden; 
+}
+.side-menu {
+    color: rgb(34, 34, 34);
+    position: fixed;
+    width: 13%;
+    height: 100vh;
+    background-color: rgb(183, 236, 240);
+}
+.top-banner {
+    color: seashell;
+    width: 100%;
+    height: 75px;
+    background-color: rgb(100, 100, 100);
+}
+.top-banner p {
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+    font-size: 35px;
+    padding: 0px;
+    margin: 0px;
+}
+.rigth-side {
+    position: relative;
+    left: 13%;
+    width: 87%;
+}
+header {
+    height: 75px;
+    width: 100%;
+    background-color: rgb(139, 139, 139);
+}
+.login {
+    line-height: 75px;
+    width: 300px;
+    height: 100%;
+    float: right;
+}
+.login :hover {
+    background-color: rgb(100, 100, 100);
+}
+.login p {
+    color: seashell;
+    font-size: 20px;
+    margin: 0px;
+    min-height: 75px;
+    text-align: center;
+}
+.input_div {
+    margin-bottom: 40px;
+}
+.authForm {
+    display: none;
+    position: absolute;
+    top: 75px;
+    right: 0px;
+    width: 300px;
+    background-color: rgb(139, 139, 139);  
+}
+.task_div {
+    position: absolute;
+    min-width: 219px;
+    top: 75px;
+    right: 519px;
+    background-color: rgb(139, 139, 139);  
+}
+.task_list li{
+    line-height: 30px;
+    min-height: 30px;
+    background-color: rgb(139, 139, 139);
+}
+.task_div :hover {
+    background-color: rgb(120, 120, 120);
+}
+.task_list {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+.static_list {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;  
+}
+.static_list li {
+    height:  25px;
+    line-height: 25px;
+}
+.header_static:hover {
+    background-color: rgb(100, 100, 100);
+}
+.lost-password {
+    display: table;
+    width: 100%;
+}
+.lost-password a {
+    font-size: 12px;
+    text-align: center;
+    color: black;
+    text-decoration: none;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+.authForm form {
+    min-height: 250px;
+    padding: 20px;
+}
+.authForm label {
+    font-size: 20px;
+    color: seashell;
+    text-align: center;
+    display: block;
+}
+.authForm form input {
+    font-size: 20px;
+    padding: 4px;
+    margin-left: 10px;
+    border-radius: 3px;
+    border: 0px;
+    padding: 0px;
+    padding: 0px;
+    display: block;
+    margin: 8px 0px ;
+    height: 35px;
+    width: 100%;
+}
+.btn_login {
+    margin: 8px 0px ;
+    height: 40px;
+    display: block;
+    width: 100%;
+}
+.authForm label {
+    width: 100%;
+}
+.nav-conteiner {
+    list-style-type: none;
+    padding-top: 20px;
+}
+.nav-table {
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+}
+.nav-table li {
+    vertical-align: middle;
+    height: 45px;
+    font-size: 18px;
+    padding: 3px 25px 3px 15px;
+    list-style-type: none;
+}
+.nav-table :hover {
+    background-color: rgb(100, 100, 100);
+}
+.nav-table li a {
+    display: table-cell;
+    vertical-align: middle;
+    color: rgb(34, 34, 34);
+    text-decoration: none;
+}
+.table {
+    display: table;
+    width: 100%;
+    height: 100%;
+}
+.default_p {
+    margin: 0px;
+    padding: 0px;
+}
+.default_p :hover {
+    background-color: burlywood;
+}
+.main {
+    width: 100%;
+    min-height: 1175px;
+}
+footer {
+    height: 250px;
+    background-color: rgb(139, 139, 139);
+}
+.selector-of-money {
+    padding: 35px 100px 0px 100px;
+    height: 53px;
+}
+.selector-of-money .selector {
+    height: 53px;
+}
+.money-switcher {
+    text-align: center;
+    width: 33%;
+    display: inline-block;
+}
+.money-switcher p {
+    line-height: 53px;
+    height: 100%;
+    padding: 0px;
+    margin: 0px;
+    background-color: #f3f3f3;
+}
+.money-switcher :hover {
+    border-radius: 53px 0px 0px 53px;
+    margin: 0px;
+    line-height: 53px;
+    background-color: rgb(139, 139, 139);
+}
+#centre {
+    border-radius: 0px;
+}
+#left {
+    border-radius: 53px 0px 0px 53px;
+}
+#right {
+    border-radius: 0px 53px 53px 0px; 
+}
+.main_total {
+    min-height: 1175px;
+    display: none;
+    width: 100%;
+}
+.left_main {
+    min-height: 1175px;
+    width: 50%;
+    float: left;
+}
+.right_main {    
+    min-height: 1175px;
+    width: 50%;
+    float: left;
+}
+#bl2 {
+    display: block;
+}
+.content-block {
+    margin-bottom: 40px;
+    background-color: #f3f3f3;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+.content-block form input, label {
+    padding-left: 15px;
+    border-radius: 6px;
+}
+.content{
+    margin: 60px;
+}
+.content-block table {
+    border-bottom: 1px solid rgb(139, 139, 139);
+    border-collapse: collapse;
+    width: 100%;
+}
+.content-block tr {
+    line-height: 30px;
+    border-bottom: 1px solid rgb(100, 100, 100);
+    padding-bottom: 10px;
+}
+.btn-to-change {
+    height: 24px;
+    border-radius: 5px;
+    border: 1px solid rgb(136, 136, 136);
+    background-color: #f3f3f3;
+    width: 100px;
+    float: right;
+}
+.td-second {
+    text-align: center;
+}
+.card_place_inp {
+    border: none;
+    background-color: #f3f3f3;        
+    width: 100%;
+}
+.card_place_inp :focus {
+    color: violet;
+}
+.inner_button_change ,.inner_button_delete {
+    float: right;
+    width: 30px;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    text-align: center;
+    -webkit-appearance: none; 
+}
+input[type='number'],
+input[type="number"]:hover,
+input[type="number"]:focus {
+    appearance: none;
+    -moz-appearance: textfield;
+}
+#id_balance {
+    text-align: left;
+    padding-left: 10px;
+}
+.content_title {
+    line-height: 30px;
+    height: 30px;
+    border-radius: 5px;
+    background-color: rgb(252, 252, 252);
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.add_income tr td input{
+    text-align: left;
+    padding-left: 15px;
+    border-radius: 6px;
+    width: 176px;
+}
+.p-for-btn-centre {
+    text-align: center;
+    margin: 0px;
+}
+.btn_centre {
+    border-radius: 5px;
+    border: 1px solid rgb(136, 136, 136);
+    background-color: #f3f3f3;
+    width: 200px;
+    height: 30px;
+    text-align: center;
+    margin-top: 10px;
+}
+.moneystatic {
+    max-height: 100%;
+}
+.header_static {
+    width: 195px;
+    height: 51px;
+    float: right;
+    padding: 12px;
+}
+.static_field {
+    line-height: 20px;
+    padding: 0px;
+    margin: 0px;
+    font-size: 16px;
+    color: seashell;
+}
+.total_in_table {
+    text-align: center;
+    font-size: 14px;
+}
+#total_money_id, #total_money_id .content-block{
+    margin-bottom: 0px;
+}
+.total_money_div {
+    display: inline-block;
+    width: 33%;
+    text-align: center;
+}
+.table_in_total {
+    display: table;
+}
+.table_raw {
+    display: table-row;
+}
+.table_raw p {
+    padding: 10px 7px;
+    display: table-cell;
+}
+.left_cell {
+    text-align: right;
+}
+.right_cell {
+    font-weight: bold;
+    text-align: center;
+}
+.w60 {
+    width: 60%;
+}
+.w40 {
+    width: 40%
+    
+}
+.w70 {
+    width: 70%;
+}
+.w30 {
+    width: 30%
+}
+.right_cont {
+    margin-left: 20px;
+    margin-right: 80px
+}
+.button_without_table {
+    border-top: 1px solid black;
+}
+.empty_values {
+    text-align: center;
+    min-width: 100%;
+}
+.login-div {
+    position: relative;
+    left: 35%;
+    width: 30%;
+    right: 35%;
+}
+.center {
+    text-align: center;
+}
+.btn_div a {
+    text-decoration: none;
+}
+.overdue {
+    background-color: rgb(255, 200, 189);
+}
+.future_task {
+    display: none;
+}
+.future_trigger {
+    text-decoration: none;
+    margin: 0px;
+}
+.history {
+    background-color: rgb(221, 251, 255);
+}
+.overdue_li :hover {
+    background-color: lightcoral;
+}
+.default {
+    margin: 0px;
+    padding: 0px;
+    text-decoration: none;
+    color: rgb(34, 34, 34);
+}
+.auth_ul :hover {
+    background-color: rgb(100, 100, 100);
+}
+.auth_li {
+    height: 40px;
+    line-height: 40px;
+    list-style-type: none;
+    color: seashell;
+}
+.auth_li a {
+    color: seashell;
+}
+.today { 
+    background-color: rgb(161, 255, 169);
+}
+.sub_info{
+    background-color: rgb(252, 252, 252);
+}
+.sub_info td  { 
+    background-color: rgb(252, 252, 252);
+}
+.habit_sub tr {
+    display: none;
+}
+.floatL {
+    float: left;
+}
+.floatR {
+    float: right;
+}
+.wide-button {
+    border-radius: 5px;
+    width: 100%;
+    height: 40px;
+    background-color: #f3f3f3;
+}
+.send_email {
+    margin-left: 15px;
+    width: 150px;
+    float: left;
+}
+.send_email a {
+    background-color: none;
+    color: seashell;
+    text-decoration: none;
+    padding: 0px;
+    margin: 0px;
+    padding-left: 50px;
+}

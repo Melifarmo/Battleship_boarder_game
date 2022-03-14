@@ -1,0 +1,359 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Планировщик{% endblock %}
+
+{% block content %}
+<div class="left_main w60" xmlns="http://www.w3.org/1999/html">
+    <div class="content">
+        <div class="content-block">
+            <p class="content_title">Список задач</p>
+            <table cellpadding='5'>
+                <tr>
+                    <th width="100">Выполнено?</th>
+                    <th>Название</th>
+                    <th width="135">Дата</th>
+                    <th width="40">Удалить</th>
+                    <th></th>
+                </tr>
+                {% if future %}
+                <tr>
+                    <td colspan="5" class="center">
+                        <p class="content_title future_trigger">
+                            Будущие задачи(посмотреть)
+                        </p>
+                    </td>
+                </tr>
+                {% for task in future %}
+                <tr class="future_task">
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='task_type' value="future">
+                    </form>
+
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input type="text" class='card_place_inp center' name='title' value="{{ task.title }}">
+                        </td>
+
+                        <td class='td-second'>
+                            <input type="date" class="center" name='date' value='{{ task.date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% endif %}
+
+                {% if tasks or repeatable_tasks %}
+                <tr>
+                    <td colspan="5" class="center">Задачи на сегодня</td>
+                </tr>
+                {% for task in today %}
+                <tr>
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input class='card_place_inp center' name='title' value="{{ task.title }}"></input>
+                        </td>
+
+                        <td class='td-second'>
+                            <input type="date" class="center" name='date' value='{{ task.date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% for task in sorted_repeatable_tasks %}
+                <tr>
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='date' value="{{ task.date }}">
+                        <input style="display: none;" name='title' value="{{ task.title }}">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input class='card_place_inp center' name='title' value="{{ task.title }}">
+                        </td>
+
+                        <td class='td-second'>
+                            (регулярное)
+                            <input type="date" class="center" style='display: none;'
+                                   name='date' value='{{ today_date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% for task in today_done %}
+                <tr class="history">
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()" checked>
+                            </p>
+                        </td>
+                        <input style="display: none;" name='date' value="{{ task.date }}">
+                        <input style="display: none;" name='title' value="{{ task.title }}">
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input class='card_place_inp history center'
+                                   name='title' value="{{ task.title }}">
+                        </td>
+                        <td class='td-second'>
+                            (выполнено)
+                            <input type="date" style='display:none;' class="center"
+                                   name='date' value='{{ task.date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+
+                {% if overdue %}
+                <tr>
+                    <td colspan="5" class="center">Просроченные задачи</td>
+                </tr>
+                {% for task in overdue %}
+                <tr class="overdue">
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='task_typu' value="repeatable">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+
+                        <td>
+                            <input class='card_place_inp overdue center'
+                                   name='title' value="{{ task.title }}">
+                        </td>
+
+                        <td class='td-second'>
+                            <input type="date" class="center" name='date' value='{{ task.date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% endif %}
+
+                {% else %}
+                <tr>
+                    <td class="empty_values" colspan="5">Нету активных задач</td>
+                </tr>
+                {% endif %}
+                <tr class='total_in_table'>
+                    <td colspan="3" style="text-align: right;">Итого актуальных задач:</td>
+                    <td>
+                        <b>{% tasks_length today overdue sorted_repeatable_tasks %}</b>
+                    </td>
+                    <td>
+                        <input class='btn-to-change' type="submit" value="История"/>
+                    </td>
+                </tr>
+
+                {% if overdue_done %}
+                <tr>
+                    <td colspan="5" class="center">История</td>
+                </tr>
+                {% for task in overdue_done %}
+                <tr class="history">
+                    <form action="{% url 'change_status' %}" method="POST">
+                        {% csrf_token %}
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='done' onChange="this.form.submit()" checked>
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='task_typu' value="repeatable">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input class='card_place_inp history center' name='title'
+                                   value="{{ task.title }}">
+                        </td>
+
+                        <td class='td-second'>
+                            <input type="date" class="history center" name='date'
+                                   value='{{ task.date | date_format }}'/>
+                        </td>
+                        <td>
+                            <p class="default center">
+                                <input type="checkbox" name='delete'>
+                            </p>
+                        </td>
+                        <td>
+                            <input class='btn-to-change' type="submit" value="Изменить"/>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Daily_list">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td class="empty_values" colspan="5">Нет истории</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+<div class="right_main w40">
+    <div class="content right_cont">
+        <div class="content-block">
+            <p class="content_title">Добавить задачу</p>
+            <form action="{% url 'add_task' %}" method="POST">
+                {% csrf_token %}
+                <table>
+                    {{ daily_add.as_table }}
+                </table>
+                <p class="p-for-btn-centre">
+                    <button class="btn_centre" type="submit">Добавить</button>
+                </p>
+            </form>
+        </div>
+        <div class="content-block">
+            <p class="content_title">Повторяющиеся задачи</p>
+            <table>
+                <tr>
+                    <th>
+                        Название
+                    </th>
+                    <th>Удалить?</th>
+                </tr>
+                {% if repeatable_tasks %}
+                {% for task in repeatable_tasks %}
+                <tr>
+                    <form method="POST" action='{% url "delete_or_update" %}'> {% csrf_token %}
+                        <td>
+                            <input type="text" class='card_place_inp' onchange="this.form.submit()"
+                                   name='title' value="{{ task.title }}">
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Repeating_task">
+                    </form>
+                    <form method="POST" action='{% url "delete_or_update" %}'> {% csrf_token %}
+                        <td width='110'>
+                            <p style="text-align: center; margin: 0px;">
+                                <input type="checkbox" name='delete' onchange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ task.id }}">
+                        <input style="display: none;" name='form' value="Repeating_task">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td class="empty_values" colspan="3">Нет повторяющихся задач</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function switchFutureTask () {
+        let trigger = document.querySelector('.future_trigger')
+        let set_of_row = document.querySelectorAll('.future_task')
+        for (let i = 0; i < set_of_row.length; i++) {
+                    set_of_row[i].style.display = 'none';
+                }
+        trigger.addEventListener('click', () => {
+            if (set_of_row[0].style.display == 'none') {
+                for (let i = 0; i < set_of_row.length; i++) {
+                    set_of_row[i].style.display = 'table-row';
+                }
+            }
+            else {
+                for (let i = 0; i < set_of_row.length; i++) {
+                    set_of_row[i].style.display = 'none';
+                }
+            }    
+        })
+    }
+    switchFutureTask()
+
+</script>
+{% endblock %}

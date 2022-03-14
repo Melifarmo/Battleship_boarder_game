@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% load static %}
+
+{% block title %}Привычки{% endblock %}
+{% block content %}
+<div class="left_main w60" xmlns="http://www.w3.org/1999/html">
+    <div class="content">
+        <div class="content-block">
+            <p class="content_title">Список задач</p>
+            <table>
+                <tr>
+                    <th>Уд?</th>
+                    <th colspan="2">Привычка</th>
+                    {% for date in dates %}
+                    <th>
+                        {{ date.day }}-{{ date.month }}
+                    </th>
+                    {% endfor %}
+                </tr>
+                {% if habits %}
+                {% for habit, habit_date in habits_and_date %}
+                <tr>
+                    <td width=40>
+                        <form action="{% url 'delete_habit' habit.id %}" class="center">
+                            <button onclick="this.form.submit()">&#9932;</button>
+                        </form>
+                    </td>
+                    <td width="130" style="width:100%; height:100%;">
+                        <form action="{% url 'update_habit' habit.id %}" method="post"> {% csrf_token %}
+                            <input class="card_place_inp" type="text" name="title" value="{{ habit.title }}"
+                                   onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td width=40>
+                        <button onclick="showSubInfo( '#habit_info_{{ habit.id }}' )">&#9776;</button>
+                    </td>
+                    {% for date in dates %}
+                    {% if date in habit_date %}
+                    <td>
+                        <form action="{% url 'change_habit' %}" method="POST"> {% csrf_token %}
+                            <input type="date" name='date' style="display: none;" value="{{ date | date_format }}">
+                            <input type="number" name='id' style="display: none;" value="{{ habit.id }}">
+                            {% if date < today_date %}
+                            <p style="text-align: center; margin: 0px;" class="overdue">
+                                <input type="checkbox" name='done' checked onChange="this.form.submit()">
+                            </p>
+                            {% elif date == today_date %}
+                            <p style="text-align: center; margin: 0px;" class="today">
+                                <input type="checkbox" name='done' checked onChange="this.form.submit()">
+                            </p>
+                            {% else %}
+                            <p style="text-align: center; margin: 0px;">
+                                <input type="checkbox" name='done' checked onChange="this.form.submit()">
+                            </p>
+                            {% endif %}
+                        </form>
+                    </td>
+                    {% else %}
+                    <td>
+                        <form action="{% url 'change_habit' %}" method="POST"> {% csrf_token %}
+                            <input type="date" name='date' style="display: none;" value="{{ date | date_format }}">
+                            <input type="number" name='id' style="display: none;" value="{{ habit.id }}">
+                            {% if date < today_date %}
+                            <p style="text-align: center; margin: 0px;" class="overdue">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                            {% elif date == today_date %}
+                            <p style="text-align: center; margin: 0px;" class="today">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                            {% else %}
+                            <p style="text-align: center; margin: 0px;">
+                                <input type="checkbox" name='done' onChange="this.form.submit()">
+                            </p>
+                            {% endif %}
+                        </form>
+                    </td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                <form action="{% url 'update_habit' habit.id %}" method="POST"> {% csrf_token %}
+                    <tr class="sub_info" style="display: none;" id='habit_info_{{ habit.id }}'>
+                        <td colspan="15">
+                            <p class="default" style="margin-left: 10px;">
+                                Дополнительная информация
+                            </p>
+                        </td>
+                    </tr>
+                    <tr class="sub_info" style="display: none;" id='habit_info_{{ habit.id }}'>
+                        <td colspan="2">
+                            <p class="default" style="margin-left: 10px;">
+                                Цель(дней подряд)
+                            </p>
+                        </td>
+                        <td colspan="14">
+                            <input type="number" name='id_goal' value="{{ habit.goal }}" onChange="this.form.submit()">
+                        </td>
+                    </tr>
+                    <tr class="sub_info" style="display: none;" id='habit_info_{{ habit.id }}'>
+                        <td colspan="2">
+                            <p class="default" style="margin-left: 10px;">
+                                Текущий прогресс
+                            </p>
+                        </td>
+                        <td colspan="13">
+                            {{ habit.current_progress }}
+                        </td>
+                    </tr>
+                    <tr class="sub_info" style="display: none;" id='habit_info_{{ habit.id }}'>
+                        <td colspan="2">
+                            <p class="default" style="margin-left: 10px;">
+                                Группа
+                            </p>
+                        </td>
+                        <td colspan="13">
+                            <select name="group_id" id="trg">
+                                {% for id, option in habit_choices %}
+                                    {% if option == habit.group.title %}
+                                        <option selected value="{{ id }}">{{ option }}</option>
+                                    {% else %}
+                                        <option value="{{ id }}">{{ option }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+
+                    <input type="number" name='id' value="{{ habit.id }}" style="display: none;">
+                </form>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="14" class="center">
+                        Нет активных привычек
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        <div class="content-block">
+            <p class="content_title">Завершенные привычки</p>
+            <table>
+                <tr>
+                    <th>
+                        Название
+                    </th>
+                    <th>
+                        Прогресс
+                    </th>
+                </tr>
+                {% if finished_habits %}
+                {% for habit in finished_habits %}
+                <tr>
+                    <td>
+                        <form action="{% url 'update_habit' habit.id %}" method="post"> {% csrf_token %}
+                            <input class="card_place_inp" type="text" name="title" value="{{ habit.title }}"
+                                   onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <form action="{% url 'update_habit' habit.id %}" method="POST">
+                        <td width="300" class="center">
+                            {{ habit.current_progress }} /
+                            <input type="number" name="id_goal" value="{{ habit.goal }}" onchange="this.form.submit()">
+                        </td>
+                        {% csrf_token %}
+                    </form>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <td colspan="2" class="center">
+                    Нет завершенных привычек
+                </td>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="right_main w40">
+    <div class="content right_cont">
+
+        <div class="content-block">
+            <p class="content_title">Добавить новую привычку</p>
+            <form action="{% url 'add_habit' %}" method="POST">
+                <table>
+                    {% csrf_token %}
+                    {{ add_habit.as_table }}
+                    <tr>
+                        <td>
+                            <p class="default center" style="padding-left: 15px;">
+                                <b>Группа привычки:</b>
+                            </p>
+                        </td>
+                        <td>
+                            <select name="group_id" id="trg">
+                                {% if habit_choices %}
+                                    {% for id, option in habit_choices %}
+                                        <option value="{{ id }}">{{ option }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="">Общая</option>
+                                {% endif %}
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <p class="p-for-btn-centre">
+                    <button class="btn_centre" type="submit">Добавить</button>
+                </p>
+                <input style="display: none;" type="text" name='form' value="Habit">
+            </form>
+        </div>
+
+        <div class="content-block">
+            <p class="content_title">Добавить новую категорию привычек</p>
+            <form class="add_card" action="{% url 'add_habit_group' %}" method="POST">
+                {% csrf_token %}
+                <table>
+                    {{ add_habit_group.as_table }}
+                </table>
+                <input style="display: none;" type="text" name='form' value="Habit_group">
+                <p class="p-for-btn-centre">
+                    <button class="btn_centre" type="submit">Добавить</button>
+                </p>
+                <br>
+            </form>
+            <table>
+                <tr>
+                    <th>
+                        Название
+                    </th>
+                    <th>Удалить?</th>
+                </tr>
+                {% if habit_groups %}
+                {% for habit_group in habit_groups %}
+                <tr>
+                    <form method="POST" action='{% url "delete_or_update" %}'>
+                        {% csrf_token %}
+                        <td>
+                            <input type="text" class='card_place_inp' name='title' value="{{ habit_group.title }}"
+                                   onChange="this.form.submit()"/>
+                        </td>
+                        <td width='110'>
+                            <p style="text-align: center; margin: 0px;">
+                                <input type="checkbox" name='delete' onChange="this.form.submit()">
+                            </p>
+                        </td>
+                        <input style="display: none;" name='id' value="{{ habit_group.id }}">
+                        <input style="display: none;" name='form' value="Habit_group">
+                    </form>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td class="empty_values" colspan="3">Нет установленных категорий</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+  function showSubInfo(tag) {
+    let set_of_tr = document.querySelectorAll(tag);
+    for (let i = 0; i < set_of_tr.length; i++) {
+      console.log(set_of_tr[i].style.display)
+      if (set_of_tr[i].style.display == 'none') {
+        set_of_tr[i].style.display = 'table-row';
+      }
+      else {
+        set_of_tr[i].style.display = 'none';
+      }
+    }
+  }
+
+
+</script>
+{% endblock %}
